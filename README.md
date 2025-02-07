@@ -14,12 +14,12 @@
 This repository provides an example of a CI/CD pipeline for Magento 2.2.x, designed to:
 -  Install dependencies
 -  Retrieve configuration
--  Generate an application package
+-  Generate an applicationgit stau package
 -  Deployment using artifacts
 
 <u>**Note:**</u> This template serves as a foundation and should be customized based on specific project requirements.
 
-Container images are hosted in [GitHub Container Registry](https://github.com/dna4digital/m2.2-legacy-deps-ci-php7.1-composer1.6/pkgs/container/m2.2-legacy-deps-ci-php7.1-composer1.6).
+Container image is hosted in [GitHub Container Registry](https://github.com/dna4digital/m2.2-legacy-deps-ci-php7.1-composer1.6/pkgs/container/m2.2-legacy-deps-ci-php7.1-composer1.6).
 
 | Container image  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;           |
 |-------------------------------------------------------------|
