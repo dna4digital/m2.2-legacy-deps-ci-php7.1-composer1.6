@@ -1,0 +1,82 @@
+
+variables:
+  GIT_DEPTH: 1
+  REPO_CONFIG: "your-repo.git"
+  BRANCH_CONFIG: "develop"
+  GIT_USER_EMAIL: "your-email@jo.com"
+  GIT_USER_NAME: "Your Name"
+  CI_PROJECT_NAME: "your-project"
+  DEPLOY_SERVER: "your.server.com"
+
+stages:
+  - install
+  - build
+
+.dev-requirements:
+  image: ubuntu:latest
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - ssh-keyscan $DEPLOY_SERVER >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" >> ~/.ssh/config'
+    - git config --global user.email "$GIT_USER_EMAIL"
+    - git config --global user.name "$GIT_USER_NAME"
+
+dev-composer-install:
+  stage: install
+  image: ghcr.io/dna4digital/m2.2-legacy-deps-ci-php7.1-composer1.6
+  script:
+    - composer --working-dir=./path/to/your/project install --no-dev --prefer-dist
+    - find ./path/to/your/project/vendor -type d -name .git -exec rm -rf {} +
+    - composer --working-dir=./path/to/your/project/update install --no-dev --prefer-dist
+    - find ./path/to/your/project/update/vendor -type d -name .git -exec rm -rf {} +
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - path/to/your/project/vendor/
+      - path/to/your/project/update/vendor/
+      - path/to/your/project/var/
+      - path/to/your/project/bin/
+  tags:
+    - docker
+  only:
+    - develop
+
+dev-config-deploy:
+  stage: install
+  extends: .dev-requirements
+  script:
+    - git clone --depth $GIT_DEPTH $REPO_CONFIG -b $BRANCH_CONFIG dev-package
+  artifacts:
+    expire_in: 4 weeks
+    paths:
+      - dev-package/
+  tags:
+    - docker
+  only:
+    - develop
+
+dev-package-app:
+  stage: build
+  image: ghcr.io/dna4digital/m2.2-legacy-deps-ci-php7.1-composer1.6
+  dependencies:
+    - dev-composer-install
+    - dev-config-deploy
+  script:
+    - git archive --format=tar --output=$CI_PROJECT_NAME.tar HEAD
+    - tar -rf $CI_PROJECT_NAME.tar path/to/your/project/vendor
+    - tar -rf $CI_PROJECT_NAME.tar path/to/your/project/update/vendor
+    - tar -rf $CI_PROJECT_NAME.tar path/to/your/project/bin
+  artifacts:
+    name: $CI_PROJECT_NAME
+    expire_in: 1 week
+    paths:
+      - $CI_PROJECT_NAME.tar
+  tags:
+    - docker
+  only:
+    - develop
+
